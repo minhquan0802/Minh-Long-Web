@@ -1,67 +1,50 @@
-# Payload Blank Template
+# Website Minh Long
 
-This template comes configured with the bare minimum to get started on anything you need.
+Next.js 16 + Payload CMS 3 + PostgreSQL. Một project duy nhất gồm website, trang quản trị (`/admin`) và API.
 
-## Quick start
+## Chạy trên máy (dev)
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+Yêu cầu: Node.js 20+, Docker Desktop đang chạy.
 
-## Quick Start - local setup
+```bash
+docker compose up -d     # bật PostgreSQL (lần đầu tự tải image)
+npm install              # chỉ cần lần đầu
+npm run dev              # http://localhost:3000  –  admin: http://localhost:3000/admin
+```
 
-To spin up this template locally, follow these steps:
+Tạo dữ liệu mẫu (XOÁ sản phẩm/bài viết/ảnh hiện có, giữ tài khoản): `npm run seed`
 
-### Clone
+Chạy bản production trên máy (nhanh như khi lên host): `npm run build` rồi `npm start`.
+Xoá bản build/cache cho nhẹ máy (tắt server trước): `npm run clean` — thư mục `.next` sẽ tự tạo lại khi chạy dev/build.
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+Tắt database: `docker compose stop`. Dữ liệu vẫn được giữ trong Docker volume `pgdata`.
 
-### Development
+File `.env` (copy từ `.env.example`):
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+| Biến | Ý nghĩa |
+|---|---|
+| `DATABASE_URL` | Chuỗi kết nối PostgreSQL |
+| `PAYLOAD_SECRET` | Chuỗi bí mật ngẫu nhiên, dài |
+| `NEXT_PUBLIC_SERVER_URL` | URL website (dùng cho SEO, link chia sẻ) |
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+## Cấu trúc
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+```
+src/
+├── app/(frontend)/     Website công khai
+├── app/(payload)/      Trang admin + API (Payload tự sinh)
+├── collections/        Bảng dữ liệu = form trong admin
+│   Products, Categories, Brands      – Cửa hàng
+│   Orders, Contacts                  – Bán hàng
+│   Services, Posts, Pages, Media     – Nội dung
+│   Users                             – Tài khoản (admin / editor / sales)
+├── globals/            SiteSettings (hotline, Zalo, footer), Homepage (banner, khối trang chủ)
+├── components/         Giao diện: layout/, product/, cart/, forms/
+├── lib/                Hàm lấy dữ liệu, server actions (form, đặt hàng), định dạng giá
+├── seed/               Dữ liệu mẫu (npm run seed)
+├── access/             Phân quyền
+├── fields/slug.ts      Slug tự sinh, hỗ trợ tiếng Việt
+└── payload.config.ts   Cấu hình chính
+```
 
-#### Docker (Optional)
-
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
-
-To do so, follow these steps:
-
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
-
-## How it works
-
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
-
-### Collections
-
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
-
-- #### Users (Authentication)
-
-  Users are auth-enabled collections that have access to the admin panel.
-
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
-
-- #### Media
-
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
-
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+Sau khi sửa collection, chạy `npm run generate:types` để cập nhật kiểu TypeScript.

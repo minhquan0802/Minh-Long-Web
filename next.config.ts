@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // Tắt nút "N" (Next.js Dev Tools) ở góc màn hình khi chạy dev; lỗi vẫn hiện overlay như thường
+  devIndicators: false,
   images: {
     localPatterns: [
       {

@@ -1,0 +1,304 @@
+@use './nav-icons';
+
+/* Tuỳ biến giao diện admin Minh Long.
+   Dùng biến màu của Payload (--theme-*) để chế độ sáng/tối đều hiển thị đúng. */
+
+:root {
+  --ml-sky: #1d8fbd;
+  --ml-signal: #ffb81c;
+}
+
+/* Menu trái hẹp hơn (mặc định Payload 275px) để bảng danh sách có thêm chỗ.
+   Chỉ áp dụng màn hình lớn — điện thoại menu vẫn phủ toàn màn hình. */
+@media (min-width: 769px) {
+  :root {
+    --nav-width: 220px;
+  }
+}
+
+/* Tiêu đề bảng danh sách: nền riêng + chữ đậm, tách hẳn khỏi dữ liệu */
+.table thead th {
+  background: var(--theme-elevation-100);
+  border-bottom: 2px solid var(--ml-sky);
+  color: var(--theme-text);
+  font-weight: 600;
+  vertical-align: middle;
+}
+.table thead th:first-child {
+  border-top-left-radius: 6px;
+}
+.table thead th:last-child {
+  border-top-right-radius: 6px;
+}
+.table thead .sort-column__label,
+.table thead .sort-column__label span {
+  color: var(--theme-text);
+  font-weight: 600;
+}
+
+/* Cột ảnh thu nhỏ không cần rộng 150px như cột chữ */
+.table #heading-images,
+.table .cell-images {
+  min-width: 64px;
+  width: 64px;
+}
+
+/* ---------- Menu trái: icon trước mỗi mục (hình icon ở nav-icons.scss) ---------- */
+.nav__link {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+
+  &::before {
+    content: '';
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    background-color: currentColor;
+    opacity: 0.7;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+
+  &:hover::before {
+    opacity: 1;
+    color: var(--ml-sky);
+  }
+}
+
+/* Mục đang mở: Payload hiển thị bằng <div> thay vì <a> */
+div.nav__link::before {
+  opacity: 1;
+  color: var(--ml-sky);
+}
+
+/* ---------- Nút sáng/tối ---------- */
+.ml-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--theme-text);
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ml-sky);
+  }
+  @media (max-width: 768px) {
+    span {
+      display: none;
+    }
+  }
+}
+
+/* ---------- Bảng điều khiển ---------- */
+.ml-dash {
+  padding-top: 8px;
+  padding-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  h1 {
+    margin: 0;
+    font-size: 30px;
+  }
+  h2 {
+    margin: 0;
+    font-size: 17px;
+  }
+  a {
+    text-decoration: none;
+  }
+}
+
+.ml-dash__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  p {
+    margin: 6px 0 0;
+    color: var(--theme-elevation-500);
+  }
+}
+
+.ml-dash__site {
+  padding: 8px 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  color: var(--theme-text);
+
+  &:hover {
+    border-color: var(--ml-sky);
+  }
+}
+
+.ml-dash__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.ml-tile {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 8px;
+  color: var(--theme-text);
+  background: var(--theme-elevation-0);
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--ml-sky);
+  }
+}
+
+.ml-tile__value {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--theme-elevation-400);
+  font-variant-numeric: tabular-nums;
+}
+
+.ml-tile--hot {
+  border-left: 4px solid var(--ml-signal);
+
+  .ml-tile__value {
+    color: var(--theme-text);
+  }
+}
+
+.ml-tile__label {
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.ml-tile__hint {
+  font-size: 13px;
+  color: var(--theme-elevation-500);
+}
+
+.ml-dash__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ml-action {
+  padding: 9px 14px;
+  border-radius: 6px;
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-100);
+  color: var(--theme-text);
+  font-weight: 500;
+
+  &::before {
+    content: '+ ';
+    color: var(--ml-sky);
+    font-weight: 700;
+  }
+
+  &:hover {
+    border-color: var(--ml-sky);
+  }
+}
+
+.ml-dash__lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ml-panel {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 8px;
+  overflow: hidden;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  td {
+    padding: 10px 16px;
+    border-top: 1px solid var(--theme-elevation-100);
+    vertical-align: middle;
+  }
+}
+
+.ml-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--theme-elevation-50);
+
+  a {
+    color: var(--ml-sky);
+    font-size: 14px;
+  }
+}
+
+.ml-strong {
+  display: block;
+  font-weight: 600;
+  color: var(--theme-text);
+}
+.ml-muted {
+  display: block;
+  font-size: 13px;
+  color: var(--theme-elevation-500);
+}
+.ml-num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ml-time {
+  text-align: right;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--theme-elevation-500);
+}
+.ml-empty {
+  margin: 0;
+  padding: 18px 16px;
+  color: var(--theme-elevation-500);
+}
+
+.ml-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  white-space: nowrap;
+  background: var(--theme-elevation-100);
+  color: var(--theme-text);
+}
+.ml-pill--new {
+  background: var(--ml-signal);
+  color: #0a2c3f;
+}
+.ml-pill--completed {
+  background: #d8f0e2;
+  color: #18794e;
+}
+.ml-pill--cancelled {
+  text-decoration: line-through;
+}
