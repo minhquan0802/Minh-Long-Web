@@ -15,6 +15,7 @@ npm run dev              # http://localhost:3000  –  admin: http://localhost:3
 Tạo dữ liệu mẫu (XOÁ sản phẩm/bài viết/ảnh hiện có, giữ tài khoản): `npm run seed`
 
 Chạy bản production trên máy (nhanh như khi lên host): `npm run build` rồi `npm start`.
+Bật website bản chạy thật bằng 1 cú bấm đúp: `start-website.bat` (tự bật Docker + database, build lần đầu, chạy server). Sau khi sửa code: `start-website.bat build` để build lại. Tên miền cho bản chạy thật đặt trong `.env.production`.
 Xoá bản build/cache cho nhẹ máy (tắt server trước): `npm run clean` — thư mục `.next` sẽ tự tạo lại khi chạy dev/build.
 
 Tắt database: `docker compose stop`. Dữ liệu vẫn được giữ trong Docker volume `pgdata`.

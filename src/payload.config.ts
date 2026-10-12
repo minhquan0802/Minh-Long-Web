@@ -41,7 +41,8 @@ const hideApiTab = <T extends { admin?: object }>(entity: T): T => ({
 })
 
 export default buildConfig({
-  serverURL: SITE_URL,
+  // Không đặt serverURL: admin + đường dẫn ảnh dùng URL tương đối, nên chạy được
+  // cả ở localhost lẫn tên miền thật. SITE_URL chỉ dùng cho SEO (link tuyệt đối).
   admin: {
     user: Users.slug,
     // Ngày giờ kiểu Việt Nam: 12/10/2026 11:54
