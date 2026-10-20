@@ -1,0 +1,66 @@
+# WordPress chạy thử trên máy (giống hosting cPanel của Minh Long: PHP 7.4 + MySQL/MariaDB)
+# Bật:  docker compose up -d     (trong thư mục wordpress/)
+# Mở:   http://localhost:3000  — hoặc https://minhquan0802.id.vn qua Cloudflare Tunnel
+name: minhlong-wp
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: minhlong_wp
+      MARIADB_USER: wp
+      MARIADB_PASSWORD: wp_local_only
+      MARIADB_ROOT_PASSWORD: root_local_only
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:6.1-php7.4-apache
+    restart: unless-stopped
+    depends_on: [db]
+    ports:
+      - '3000:80'
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: minhlong_wp
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: wp_local_only
+      WORDPRESS_TABLE_PREFIX: ml_
+      # Cho phép mở bằng cả localhost lẫn tên miền qua tunnel (https do Cloudflare lo)
+      WORDPRESS_CONFIG_EXTRA: |
+        if (!empty($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS'] = 'on'; }
+        if (!empty($$_SERVER['HTTP_HOST'])) {
+          $$ml_scheme = (!empty($$_SERVER['HTTPS']) && $$_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+          define('WP_HOME', $$ml_scheme . '://' . $$_SERVER['HTTP_HOST']);
+          define('WP_SITEURL', $$ml_scheme . '://' . $$_SERVER['HTTP_HOST']);
+        }
+        define('WP_DEBUG', true);
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('FS_METHOD', 'direct');
+    volumes:
+      - wpdata:/var/www/html
+      # Theme đang viết — sửa trên máy là thấy ngay
+      - ./themes/minhlong:/var/www/html/wp-content/themes/minhlong
+
+  # Công cụ dòng lệnh WP-CLI (cài plugin, nhập dữ liệu...)
+  cli:
+    image: wordpress:cli-php7.4
+    depends_on: [db, wordpress]
+    user: '33:33'
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: minhlong_wp
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: wp_local_only
+      WORDPRESS_TABLE_PREFIX: ml_
+    volumes:
+      - wpdata:/var/www/html
+      - ./themes/minhlong:/var/www/html/wp-content/themes/minhlong
+      - ./import:/import
+    profiles: [cli]
+
+volumes:
+  dbdata:
+  wpdata:
